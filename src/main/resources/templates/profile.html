@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title th:text="${sectionName}"></title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.js" type="application/javascript"></script>
+</head>
+<body style="background-color: #efefef">
+<div th:insert="~{navigation::navitionbar}"></div>
+<div class="container-fluid" style="margin: 40px 45px;background-color: white">
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+            <h2><span th:text="${sectionName}"></span></h2>
+            <hr>
+            <!-- 问题列表 -->
+            <div class="media" th:each="question: ${pagination.questionList}" th:if="${section == 'question'}">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="media-object img-rounded" th:src="${question.user.profilePicture}" alt="头像" width="70">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading" th:text="${question.question.title}"></h4>
+                    <span th:text="${question.question.description}"></span><br>
+                    <span style="font-size: 12px;font-weight: normal;color: #999"><span th:text="${question.question.commentCount}"></span> 个回复&nbsp;&nbsp;●&nbsp;&nbsp;<span th:text="${question.question.readCount}"></span> 次浏览&nbsp;&nbsp;●&nbsp;&nbsp;1 小时前</span>
+                </div>
+            </div>
+            <!-- 通知列表 -->
+            <div class="media" th:if="${section == 'reply'}" id="reply">
+
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination" th:if="${section == 'question'}">
+                    <li>
+                        <a aria-label="Previous" th:if="${pagination.showFirstPage}" th:href="@{'/profile/'+${section}(page=1)}">
+                            <span aria-hidden="true">&lt;&lt;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a aria-label="Previous" th:if="${pagination.showPrevious}" th:href="@{'/profile/'+${section}(page=${pagination.currentPage-1})}">
+                            <span aria-hidden="true">&lt;</span>
+                        </a>
+                    </li>
+                    <li th:each="page: ${pagination.pageList}" th:class="${pagination.currentPage == page} ? 'active' : ''">
+                        <a th:text="${page}" th:href="@{'/profile/'+${section}(page=${page})}"></a>
+                    </li>
+                    <!--<li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>-->
+                    <li>
+                        <a aria-label="Next" th:if="${pagination.showNextPage}" th:href="@{'/profile/'+${section}(page=${pagination.currentPage+1})}">
+                            <span aria-hidden="true">&gt;</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a aria-label="Next" th:if="${pagination.showEndPage}" th:href="@{'/profile/'+${section}(page=${pagination.totlePageNumber})}">
+                            <span aria-hidden="true">&gt;&gt;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+            <div class="list-group">
+                <a href="/profile/question" th:class="${section == 'question'} ? 'list-group-item active' : 'list-group-item'">我的问题</a>
+                <a href="/profile/reply" th:class="${section == 'reply'}  ? 'list-group-item active' : 'list-group-item'">
+                    最新回复
+                    <span class="badge" th:text="${session.notReadCount}" th:if="${session.notReadCount != 0}"></span>
+                </a>
+                <a href="#" class="list-group-item">我的消息</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:insert="~{footer::foot}"></div>
+<script>
+    var replyDiv = document.getElementById("reply")
+    $.ajax({
+        type: "GET",
+        url: "/notification",
+        contentType: "application/json;charset=utf-8",
+        dataType: "json",
+        success: function (comment) {
+            console.log(comment)
+            for (var i = 0; i < comment.length; i++)
+                comment[i].content = JSON.parse(comment[i].content)
+            for (i = 0; i < comment.length; i++) {
+                var nexturl = ''
+                if (comment[i].content.operated.type == "question") {
+                    nexturl = "/question/" + comment[i].content.operated.id
+                }
+                var readStr = ''
+                if (comment[i].state == 0) {
+                    readStr = '<span class="label label-danger">未读</span>'
+                } else {
+                    readStr = '<span class="label label-success">已读</span>'
+                }
+                var replyStr = '<div style="font-size: 17px;">\n' +
+                    '               <div>\n' +
+                    '                   <a href="#">'+ comment[i].content.user.username +'</a>\n'+comment[i].content.operator+
+                    '                   <a href="'+ '/readnotification/'+comment[i].id+"?nexturl="+nexturl +'">'+comment[i].content.operated.content+'</a>\n'+readStr+
+                    '               </div>\n' +
+                    '               <div style="margin: 10px 0;">\n' +
+                    '                   <span style="font-size:14px;color:#888;">'+ comment[i].content.operated.time +'</span>\n' +
+                    '               </div>\n' +
+                    '           </div>\n' +
+                    '           <hr>'
+                replyDiv.innerHTML += replyStr
+            }
+        },
+        error:function (message) {
+        }
+    });
+</script>
+</body>
+</html>

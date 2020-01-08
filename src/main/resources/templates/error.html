@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+        <title>航模论坛</title>
+        <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+        <script src="/js/jquery-3.4.1.min.js"></script>
+        <script src="/js/bootstrap.js" type="application/javascript"></script>
+    </head>
+    <body style="background-color: #efefef">
+        <div th:insert="~{navigation::navitionbar}"></div>
+        <div class="container-fluid" style="margin: 40px 45px;background-color: white">
+            <div class="row">
+                <div class="jumbotron">
+                    <h1>页面已死</h1>
+                    <p th:text="${message}"></p>
+                    <p><a class="btn btn-primary btn-lg" href="/index" role="button">返回主页</a></p>
+                </div>
+            </div>
+        </div>
+        <div th:insert="~{footer::foot}"></div>
+    </body>
+</html>

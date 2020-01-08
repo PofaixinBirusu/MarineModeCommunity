@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+        <title th:text="${question.question.title}"></title>
+        <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" href="/css/editormd.min.css"/>
+        <link rel="stylesheet" href="/css/editormd.preview.min.css"/>
+
+        <script src="/js/jquery-3.4.1.min.js"></script>
+        <script src="/js/bootstrap.js" type="application/javascript"></script>
+        <script src="/js/editormd.min.js" type="application/javascript"></script>
+        <script src="/js/lib/marked.min.js" type="application/javascript"></script>
+        <script src="/js/lib/prettify.min.js" type="application/javascript"></script>
+
+        <style>
+            .second .secdiv {
+                padding: 10px 0;
+                border-bottom: 1px solid #999;
+            }
+            .second .secdiv:nth-last-child(2) {
+                border-bottom: none;
+            }
+        </style>
+    </head>
+    <body style="background-color: #efefef">
+        <div th:insert="~{navigation::navitionbar}"></div>
+        <div class="container-fluid" style="margin: 40px 45px;background-color: white">
+            <div class="row">
+                <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <h2 id="question" th:data-question-id="${question.question.id}" th:data-question-author-id="${question.user.id}" th:data-question-title="${question.question.title}"><span th:text="${question.question.title}"></span></h2>
+                        <span style="font-size: 12px;font-weight: normal;color: #999">
+                            作者：<span th:text="${question.user.username}"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                            阅读数：<span th:text="${question.question.readCount}"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                            发布于：<span>1 小时前</span>
+                        </span>
+                        <hr>
+                        <div id="question-view">
+                            <textarea style="display: none;" th:text="${question.question.description}"></textarea>
+                        </div>
+                        <script type="text/javascript">
+                            $(function() {
+                                var questionView = editormd.markdownToHTML("question-view", {
+
+                                });
+                            });
+                        </script>
+
+                        <div style="margin-top: 10px">
+                            <span th:each="label: ${question.question.labels.split('，')}">
+                                <span class="label label-info" th:text="${label}" style="margin-right: 10px"></span>
+                            </span>
+                        </div>
+                        <hr style="margin: 10px 0">
+                        <a style="text-decoration: none;color:#999" th:if="${session.user != null && session.user.id == question.question.userId}" th:href="'/publish/'+${question.question.id}">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>编辑
+                        </a>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <h4 th:text="${question.question.commentCount}+' 个回复'" style="padding: 20px 0 10px 0;margin: 0 0 10px 0"></h4>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="all-reply">
+                        <div class="media" th:each="comment: ${commentList}" style="padding-bottom: 16px">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object img-rounded" th:src="${comment.user.profilePicture}" alt="头像" width="48">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading" th:text="${comment.user.username}">
+                                </h5>
+                                <span th:utext="${comment.comment.content}" th:id="'comment-'+${comment.comment.id}" th:data-user-id="${comment.user.id}"></span>
+                                <div style="font-size: 15px;color:#999999">
+                                    <span class="glyphicon glyphicon-thumbs-up" style="margin-right: 20px; cursor: pointer"></span>
+                                    <span class="glyphicon glyphicon-comment" style="cursor: pointer" th:data-comment-id="${comment.comment.id}" data-toggle="collapse" th:data-target="'#second-comment'+${comment.comment.id}" aria-expanded="false" th:aria-controls="'second-comment'+${comment.comment.id}"></span>
+                                    <span style="float: right;">回复时间-这个功能还没做</span>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 collapse second" th:id="'second-comment'+${comment.comment.id}" style="padding-top: 10px; border: 2px solid #999; border-radius: 10px">
+                                    <div th:each="secondLevelCommentDTO:${comment.secondLevelComment}" class="secdiv">
+                                        <!--<span th:text="${secondLevelCommentDTO.comment.content}"></span>-->
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img class="media-object img-rounded" th:src="${secondLevelCommentDTO.user.profilePicture}" alt="头像" width="48">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h5 class="media-heading" th:text="${secondLevelCommentDTO.user.username}">
+                                            </h5>
+                                            <span th:utext="${secondLevelCommentDTO.comment.content}"></span>
+                                            <div style="font-size: 15px;color:#999999">
+                                                <!--<span class="glyphicon glyphicon-thumbs-up" style="margin-right: 20px; cursor: pointer"></span>
+                                                <span class="glyphicon glyphicon-comment" style="cursor: pointer" th:data-comment-id="${comment.comment.id}" data-toggle="collapse" th:data-target="'#second-comment'+${comment.comment.id}" aria-expanded="false" th:aria-controls="'second-comment'+${comment.comment.id}"></span>-->
+                                                <!--<span style="float: right;">回复时间-这个功能还没做</span>-->
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding: 0">
+                                        <input type="text" class="form-control" placeholder="评论一下" id="second-content">
+                                        <button th:class="'btn btn-success bt-reply-leve2 commentid_'+${comment.comment.id}" type="button" style="float: right;">评论</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object img-rounded" th:src="${session.user != null ? session.user.profilePicture:'/images/default_head.jpeg'}" alt="头像" width="48">
+                                </a>
+                            </div>
+                            <div class="media-body" style="padding-top: 13px">
+                                <h5 class="media-heading" th:text="${session.user!=null ? session.user.username : '游客'}">
+                                </h5>
+                            </div>
+                        </div>
+                        <textarea class="form-control" rows="6" style="margin: 10px 0px" id="content" wrap="hard"></textarea>
+                        <button type="button" class="btn btn-success" style="float: right" id="bt-reply-level1">回复</button>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                    <h4>发起人</h4>
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object img-rounded" th:src="${question.user.profilePicture}" alt="头像" width="64">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading" th:text="${question.user.username}">
+                        </h4>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12" style="margin-top: 35px">
+                    <h4>相关问题</h4>
+                    <ul style="padding: 0">
+                        <li th:each="relativeQuestion: ${relativeQuestions}" style="list-style: none; margin: 8px 0">
+                            <a th:text="${relativeQuestion.title}" th:href="@{'/question/'+${relativeQuestion.id}}" style="font-size: 15px;"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div th:insert="~{footer::foot}"></div>
+    </body>
+    <script>
+        function notificate(parentId, content) {
+            $.ajax({
+                type: "POST",
+                url: "/notificate",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({
+                    // 在服务端, 通知type是3
+                    "rootType": 3,
+                    // 发问题的用户的id
+                    // 或者发评论的用户的id
+                    "rootId": parentId,
+                    "parentType": 3,
+                    "parentId": parentId,
+                    "content": content,
+                    "secondLevelRootId": 0
+                }),
+                success: function (message) {
+                    console.log(message)
+                },
+                error:function (message) {
+                }
+            });
+        }
+
+        function commentQuestion(rootId, parentType, parentId, secondLevelRootId, content, secondCommentNotificationContent, secondCommentNotificationUserId) {
+            $.ajax({
+                type: "POST",
+                url: "/comment",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data:JSON.stringify({
+                    // 在服务端, 问题的评论type是1
+                    "rootType": 1,
+                    // 问题的id
+                    "rootId": rootId,
+                    "parentType": parentType,
+                    "parentId": parentId,
+                    "content": content,
+                    "secondLevelRootId": secondLevelRootId
+                }),
+                success:function (message) {
+                    if (message["state"] == 1) {
+                        document.getElementById("content").value = ""
+                        $.ajax({
+                            type: "GET",
+                            url: "/user/get",
+                            contentType: "application/json;charset=utf-8",
+                            dataType: "json",
+                            success:function (user) {
+                                // console.log(user)
+                                var reply = '<div class="media" style="padding-bottom: 16px">\n' +
+                                    '            <div class="media-left">\n' +
+                                    '                <a href="#">\n' +
+                                    '                    <img class="media-object img-rounded" src="'+ user.profilePicture +'" alt="头像" width="48">\n' +
+                                    '                </a>\n' +
+                                    '            </div>\n' +
+                                    '            <div class="media-body">\n' +
+                                    '                <h5 class="media-heading">\n' + user.username +
+                                    '                </h5>\n' +
+                                    '                <span>'+ content +'</span>\n' +
+                                    '                <div style="font-size: 15px;color:#999999">\n' +
+                                    '                    <span class="glyphicon glyphicon-thumbs-up" style="margin-right: 20px; cursor: pointer"></span>\n' +
+                                    '                    <span class="glyphicon glyphicon-comment" style="cursor: pointer"></span>\n' +
+                                    '                    <span style="float: right;">刚刚</span>\n' +
+                                    '                </div>\n' +
+                                    '            </div>\n' +
+                                    '        </div>'
+                                var secondReply = '<div class="secdiv">\n' +
+                                    '                  <div class="media-left">\n' +
+                                    '                      <a href="#">\n' +
+                                    '                          <img class="media-object img-rounded" src="'+ user.profilePicture +'" alt="头像" width="48">\n' +
+                                    '                      </a>\n' +
+                                    '                  </div>\n' +
+                                    '                  <div class="media-body">\n' +
+                                    '                      <h5 class="media-heading">\n' + user.username+
+                                    '                      </h5>\n' +
+                                    '                      <span>'+ content +'</span>\n' +
+                                    '                      <div style="font-size: 15px;color:#999999">\n' +
+                                    '                          <!--<span style="float: right;">回复时间-这个功能还没做</span>-->\n' +
+                                    '                      </div>\n' +
+                                    '                  </div>\n' +
+                                    '             </div>'
+                                /* 一级评论 */
+                                if (secondLevelRootId == 0) {
+                                    var allRep = document.getElementById("all-reply")
+                                    allRep.innerHTML = reply + allRep.innerHTML
+                                    /* 评论成功发通知 */
+                                    var questionDiv = document.getElementById("question")
+                                    var questionAuthorId = questionDiv.dataset["questionAuthorId"],
+                                        questionTitle = questionDiv.dataset["questionTitle"]
+                                    /* 我回复自己的问题不发通知 */
+                                    if (questionAuthorId != (user.id+"")) {
+                                        var now = new Date();
+                                        var notificationContent = JSON.stringify({
+                                            "user": {
+                                                "id": user.id,
+                                                "username": user.username
+                                            },
+                                            "operator": "回复了你的问题",
+                                            "operated": {
+                                                "id": parentId,
+                                                "content": questionTitle,
+                                                "type": "question",
+                                                "time": now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + now.getHours() + ":" + now.getMinutes()
+                                            }
+                                        })
+                                        notificate(questionAuthorId, notificationContent)
+                                    }
+                                /* 二级评论 */
+                                } else {
+                                    var secondCommentBox = document.getElementById("second-comment"+parentId)
+                                    secondCommentBox.innerHTML = secondReply + secondCommentBox.innerHTML
+                                    /* 二级评论发通知 */
+                                    var commentorId = user.id+""
+                                    /* 我评论我自己的评论是不给通知的 */
+                                    if (commentorId != secondCommentNotificationUserId) {
+                                        var now = new Date();
+                                        var notificationContent = JSON.stringify({
+                                            "user": {
+                                                "id": user.id,
+                                                "username": user.username
+                                            },
+                                            "operator": "回复了你的评论",
+                                            "operated": {
+                                                "id": document.getElementById("question").dataset["questionId"],
+                                                "content": secondCommentNotificationContent,
+                                                "type": "question",
+                                                "time": now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " " + now.getHours() + ":" + now.getMinutes()
+                                            }
+                                        })
+                                        notificate(secondCommentNotificationUserId, notificationContent)
+                                    }
+                                }
+
+                            }
+                        });
+
+                    } else {
+                        alert(message["msg"])
+                    }
+                },
+                error:function (message) {
+                }
+            });
+
+        }
+        var btReplyLevel1 = document.getElementById("bt-reply-level1")
+        btReplyLevel1.onclick = function (ev) {
+            var questionId = document.getElementById("question").dataset["questionId"]
+            commentQuestion(questionId, 1 , questionId, 0,
+                document.getElementById("content").value.
+                replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' '), null, 0)
+        }
+        var btReplyLevel2 = document.getElementsByClassName("btn btn-success bt-reply-leve2")
+        for (var i = 0; i < btReplyLevel2.length; i++) {
+            btReplyLevel2[i].onclick = function (ev) {
+                // 二级评论的内容获取
+                var commentId = "comment-"+ev.target.classList[ev.target.classList.length-1].split("_")[1];
+                var commentContent = document.getElementById(commentId).innerText
+                // 二级评论用户id获取
+                var userId = document.getElementById(commentId).dataset["userId"]
+
+                var questionId = document.getElementById("question").dataset["questionId"]
+                var inp = ev.target.parentNode.getElementsByTagName("input")[0].value.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, ' ')
+                var commentId = ev.target.parentNode.parentNode.id.split("second-comment")[1]
+                commentQuestion(questionId, 2, commentId, commentId, inp, commentContent, userId)
+
+            }
+        }
+
+    </script>
+</html>

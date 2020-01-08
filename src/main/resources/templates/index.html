@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+        <title>航模论坛</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
+        <script src="js/jquery-3.4.1.min.js"></script>
+        <script src="js/bootstrap.js" type="application/javascript"></script>
+    </head>
+    <body style="background-color: #efefef">
+        <div th:insert="~{navigation::navitionbar}"></div>
+        <div class="container-fluid" style="margin: 40px 45px;background-color: white">
+            <div class="row">
+                <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                    <h2><span class="glyphicon glyphicon-list" aria-hidden="true"></span>&nbsp;&nbsp;发现</h2>
+                    <hr>
+                    <div class="media" th:each="question: ${pagination.questionList}">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object img-rounded" th:src="${question.user.profilePicture}" alt="头像" width="70">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                <a th:text="${question.question.title}" th:href="@{'/question/'+${question.question.id}}" style="color:black; text-decoration: none;"></a>
+                            </h4>
+                            <span th:text="${#strings.abbreviate(question.question.description,80)}"></span><br>
+                            <span style="font-size: 12px;font-weight: normal;color: #999"><span th:text="${question.question.commentCount}"></span> 个回复&nbsp;&nbsp;●&nbsp;&nbsp;<span th:text="${question.question.readCount}"></span> 次浏览&nbsp;&nbsp;●&nbsp;&nbsp;1 小时前</span>
+                        </div>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li>
+                                <a aria-label="Previous" th:if="${pagination.showFirstPage and (searchKeys==null)}" th:href="@{/index(page=1)}">
+                                    <span aria-hidden="true">&lt;&lt;</span>
+                                </a>
+                                <a aria-label="Previous" th:if="${pagination.showFirstPage and (searchKeys!=null)}" th:href="@{'/index?searchKey='+${searchKeys}+'&page=1'}">
+                                    <span aria-hidden="true">&lt;&lt;</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a aria-label="Previous" th:if="${pagination.showPrevious and (searchKeys==null)}" th:href="@{/index(page=${pagination.currentPage-1})}">
+                                    <span aria-hidden="true">&lt;</span>
+                                </a>
+                                <a aria-label="Previous" th:if="${pagination.showPrevious and (searchKeys!=null)}" th:href="@{'/index?searchKey='+${searchKeys}+'&page='+${pagination.currentPage-1}}">
+                                    <span aria-hidden="true">&lt;</span>
+                                </a>
+                            </li>
+                            <li th:each="page: ${pagination.pageList}" th:class="${pagination.currentPage == page ? 'active' : ''}">
+                                <a th:text="${page}" th:href="@{/index(page=${page})}" th:if="${searchKeys==null}"></a>
+                                <a th:text="${page}" th:href="@{'/index?searchKey='+${searchKeys}+'&page='+${page}}" th:if="${searchKeys!=null}"></a>
+                            </li>
+                            <!--<li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>-->
+                            <li>
+                                <a aria-label="Next" th:if="${pagination.showNextPage and (searchKeys==null)}" th:href="@{/index(page=${pagination.currentPage+1})}">
+                                    <span aria-hidden="true">&gt;</span>
+                                </a>
+                                <a aria-label="Next" th:if="${pagination.showNextPage and (searchKeys!=null)}" th:href="@{'/index?searchKey='+${searchKeys}+'&page='+${pagination.currentPage+1}}">
+                                    <span aria-hidden="true">&gt;</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a aria-label="Next" th:if="${pagination.showEndPage and (searchKeys==null)}" th:href="@{/index(page=${pagination.totlePageNumber})}">
+                                    <span aria-hidden="true">&gt;&gt;</span>
+                                </a>
+                                <a aria-label="Next" th:if="${pagination.showEndPage and (searchKeys!=null)}" th:href="@{'/index?searchKey='+${searchKeys}+'&page='+${pagination.totlePageNumber}}">
+                                    <span aria-hidden="true">&gt;&gt;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                    <h3>热门话题</h3>
+                </div>
+            </div>
+        </div>
+        <div th:insert="~{footer::foot}"></div>
+    </body>
+</html>
