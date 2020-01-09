@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+        <meta http-equiv="x-ua-compatible" content="IE=edge" >
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+
+        <title>航模论坛</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.7/skins/default/aliplayer-min.css" />
+        <script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.7/aliplayer-min.js"></script>
+        <script src="js/jquery-3.4.1.min.js"></script>
+        <script src="js/bootstrap.js" type="application/javascript"></script>
+    </head>
+    <body>
+        <div th:insert="~{navigation::navitionbar}"></div>
+        <input type="hidden" th:value="${playUrl}" id="play-url">
+        <div class="prism-player" id="player-con"></div>
+        <div th:insert="~{footer::foot}"></div>
+        <script>
+            var player = new Aliplayer({
+                    "id": "player-con",
+                    "source": document.getElementById("play-url").value,
+                    "width": "640px",
+                    "height": "360px",
+                    "autoplay": true,
+                    "isLive": true,
+                    "rePlay": false,
+                    "playsinline": true,
+                    "preload": true,
+                    "controlBarVisibility": "hover",
+                    "useH5Prism": true
+                }, function (player) {
+                    console.log("The player is created");
+                }
+            );
+        </script>
+    </body>
+</html>
