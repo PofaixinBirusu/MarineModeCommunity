@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AliLive {
-    private static final String pushDomain = "live.marinemode.top";
-    private static final String pullDomain = "play.marinemode.top";
+    private static final String pushDomain = "live.anjufu.cn";
+    private static final String pullDomain = "play.anjufu.cn";
     private static final String appName = "MarineModeLive";
-    private static final String liveKey = "5uDYB4ge8P";
-    private static final String playKey = "V1jFHXIicv";
+    private static final String liveKey = "Wy22sey2Wb";
+    private static final String playKey = "wzRVIF62zd";
     /* 默认有效时间 30分钟 */
     private static int validTime = 30 * 60;
 
