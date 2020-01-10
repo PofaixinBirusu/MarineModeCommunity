@@ -16,14 +16,32 @@
     <body>
         <div th:insert="~{navigation::navitionbar}"></div>
         <input type="hidden" th:value="${playUrl}" id="play-url">
-        <div class="prism-player" id="player-con"></div>
+        <div>
+            <div class="prism-player" id="player-con" style="display: inline-block"></div>
+            <div style="display: inline-block;width: 250px;border: 1px solid #d9d9d9">
+                <h5>暖粉弹幕列表</h5>
+                <ul class="list-group" id="dan-mu-list">
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                    <li class="list-group-item">&nbsp;</li>
+                </ul>
+                <input id="dan-mu" placeholder="发条弹幕互动下吧~" style="width: 250px;height: 40px">
+                <button type="submit" class="btn btn-success" style="float: right;margin-bottom: 20px" id="send-dan">发送</button>
+                <input type="hidden" th:value="${#strings.substring(#httpServletRequest.getRequestURL(),0, #strings.indexOf(#httpServletRequest.getRequestURL(),#httpServletRequest.getRequestURI()))}" id="base-url">
+            </div>
+        </div>
         <div th:insert="~{footer::foot}"></div>
         <script>
             var player = new Aliplayer({
                     "id": "player-con",
                     "source": document.getElementById("play-url").value,
-                    "width": "640px",
-                    "height": "360px",
+                    "width": "700px",
+                    "height": "408px",
                     "autoplay": true,
                     "isLive": true,
                     "rePlay": false,
@@ -35,6 +53,39 @@
                     console.log("The player is created");
                 }
             );
+
+            var path = document.getElementById("base-url").value.split("://")[1];
+            var chat = new WebSocket("ws://"+path+"/liveroom/1")
+            /* 连上之后 */
+            chat.onopen = function (ev) {
+                console.log("websocket连接成功")
+            };
+            /* 接收消息 */
+            chat.onmessage = function (ev) {
+                var data = ev.data;
+                console.log(data)
+                if (!data)
+                    return
+                data = JSON.parse(data)
+                if (data.user && data.content) {
+                    var danMuList = document.getElementById("dan-mu-list")
+                    var appentStr = '<li class="list-group-item">\n' +
+                        '                <span style="color: #00a8c6">'+data.user.username+'</span>:\n' +
+                        '                <span>'+data.content+'</span>\n' +
+                        '            </li>'
+                    danMuList.removeChild(danMuList.children[0])
+                    danMuList.innerHTML+=appentStr
+                }
+            };
+            chat.onclose = function (ev) {
+                console.log("连接断开")
+            }
+            var sendButton = document.getElementById("send-dan")
+            sendButton.onclick = function (ev) {
+                var sendContent = document.getElementById("dan-mu").value
+                document.getElementById("dan-mu").value = ""
+                chat.send(sendContent)
+            }
         </script>
     </body>
 </html>
