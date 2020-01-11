@@ -6,12 +6,25 @@
         <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
 
         <title>航模论坛</title>
-        <link rel="stylesheet" href="css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
         <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.8.7/skins/default/aliplayer-min.css" />
+        <link rel="stylesheet" href="/css/style.css"/>
+        <link rel="stylesheet" href="/css/pick-a-color-1.2.3.min.css"/>
+        <link rel="stylesheet" href="/css/shCoreDefault.css"/>
+        <link rel="stylesheet" href="/css/barrager.css"/>
+
+
         <script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.8.7/aliplayer-min.js"></script>
-        <script src="js/jquery-3.4.1.min.js"></script>
-        <script src="js/bootstrap.js" type="application/javascript"></script>
+        <script src="/js/jquery-3.4.1.min.js"></script>
+        <script src="/js/bootstrap.js" type="application/javascript"></script>
+        <script src="/js/tinycolor-0.9.15.min.js"></script>
+        <script src="/js/jquery.barrager.js"></script>
+        <script src="/js/pick-a-color-1.2.3.min.js"></script>
+        <script src="/js/shCore.js"></script>
+        <script src="/js/shBrushJScript.js"></script>
+        <script src="/js/shBrushPhp.js"></script>
+
     </head>
     <body>
         <div th:insert="~{navigation::navitionbar}"></div>
@@ -75,6 +88,12 @@
                         '            </li>'
                     danMuList.removeChild(danMuList.children[0])
                     danMuList.innerHTML+=appentStr
+                    /* 发弹幕  0是系统, -1是游客*/
+                    if (data.user.id!=0 && data.user.id!=-1) {
+                        $('#player-con').barrager({
+                            'info': data.content
+                        });
+                    }
                 }
             };
             chat.onclose = function (ev) {
